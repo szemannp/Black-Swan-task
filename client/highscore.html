@@ -1,0 +1,13 @@
+<table class="table table-condensed table-hover">
+  <thead class="thead-inverse">
+    <tr>
+      <th>highscores</th>
+    </tr>
+  </thead>
+  <tbody class="db-container">
+    <tr ng-repeat="score in highscore" >
+      <td class="string"> {{score.string}} </td>
+      <td class="size"> {{score.size}} </td>
+    </tr>
+  </tbody>
+</table>
