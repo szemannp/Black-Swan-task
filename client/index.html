@@ -37,7 +37,7 @@
     <!-- <uib-alert template-url="alert.html" type="{{alert.type}}" close="closeAlert()" dismiss-on-timeout="2000" ng-if="show"> {{alert.msg}} </uib-alert> -->
 <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert()">{{alert.msg}}</div>
     <div class="container input-group">
-      <input type="text" ng-model="guess" class="form-control" placeholder="type a word" ng-blur="printWord(guess)"/>
+      <input type="text" ng-model="guess" class="form-control" placeholder="type a word" ng-blur="getWord(guess)"/>
       <span class="input-group-btn">
         <button class="btn btn-default" type="submit">Search</button>
       </span>

@@ -1,37 +1,8 @@
-var dictionaryGame = angular.module('dictionaryGame', ['ui.router']);
-var dictionary = new Typo("en_US", false, false, {
-    dictionaryPath: "../node_modules/typo-js/dictionaries"
-});
-
-var highscores = localStorage.getItem['highscores'] || [] ;
-
-dictionaryGame.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
-  $urlRouterProvider.otherwise('/');
-
-  $stateProvider
-    .state('main', {
-      url: '/',
-      templateUrl: 'index.html',
-      controller: 'MainCtrl'
-    })
-    .state('highscores', {
-      url: '/highscores',
-      templateUrl: 'highscore.html',
-      controller: 'MainCtrl'
-    })
-});
-
-dictionaryGame.factory('Config', function() {
-  return {
-    successDom: document.querySelector('')
-  }
-});
+var dictionaryGame = angular.module('dictionaryGame', []);
+var dictionary = new Typo("en_US", false, false, {dictionaryPath: "../node_modules/typo-js/dictionaries"});
 
 dictionaryGame.factory('GameService', function() {
   return {
-    isHighscore: function(list, string, fn) {
-      list.every(fn);
-    },
     checkWord: function(word) {
       return dictionary.check(word);
     },
@@ -39,17 +10,14 @@ dictionaryGame.factory('GameService', function() {
       var uniqueLetters = new Set(word.split(''));
       return uniqueLetters.size;
     }
-  }
+  };
 });
 
 dictionaryGame.controller('MainCtrl', function($scope, $timeout, GameService) {
   $scope.wordLength;
   $scope.word = '';
-  $scope.highscores = highscores;
-
-  $scope.alerts = [
-    ];
-
+  $scope.highscores = localStorage.getItem['highscores'];
+  $scope.alerts = [];
   $scope.addAlert = function(text) {
     $scope.alerts.push({msg: text});
     $timeout($scope.closeAlert, 2000);
@@ -60,16 +28,25 @@ dictionaryGame.controller('MainCtrl', function($scope, $timeout, GameService) {
   };
 
   $scope.checkProperty = function(element) {
-    element.hasOwnProperty()
+    element.hasOwnProperty();
   };
-  $scope.printWord = function(word) {
+  $scope.checkHighscores = function() {
+    if ($scope.highscores) {
+      console.info('exists');
+    } else {
+      $scope.highscores = [];
+      localStorage.setItem('highscores', JSON.stringify($scope.highscores));
+    }
+  };
+  $scope.getWord = function(word) {
     $scope.word = word;
+    $scope.checkHighscores();
     if (GameService.checkWord(word)) {
       var size = GameService.countUniqueLetters(word);
       $scope.wordLength = size;
-      if (highscores.length) {
-        for (var i = 0; i < highscores.length; i++) {
-          if (highscores[i].string === word) {
+      if ($scope.highscores) {
+        for (var i = 0; i < $scope.highscores.length; i++) {
+          if ($scope.highscores[i].string === word) {
             return;
           }
         }
@@ -77,22 +54,18 @@ dictionaryGame.controller('MainCtrl', function($scope, $timeout, GameService) {
         return;
       }
       $scope.saveToLocalStorage(word, size);
-      return;
     } else {
       $scope.addAlert('This word does not exist in our dictionary, please try an other one!');
     }
-  }
+  };
 
   $scope.saveToLocalStorage = function(word, size) {
-    localStorage.clear();
     $scope.toSave = {};
     $scope.toSave.string = word;
     $scope.toSave.size = size;
-    highscores.push($scope.toSave);
-    localStorage.setItem('highscores',JSON.stringify(highscores));
+    $scope.highscores.push($scope.toSave);
+    localStorage.setItem('highscores', JSON.stringify($scope.highscores));
     $scope.guess = '';
-    $scope.addAlert('You have earned ' + $scope.wordLength + 'points');
-  }
-
-
+    $scope.addAlert('You have earned ' + $scope.wordLength + ' points');
+  };
 });
